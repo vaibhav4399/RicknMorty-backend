@@ -1,13 +1,16 @@
 import express, { Router } from 'express';
-import { check } from 'express-validator';
+import { query } from 'express-validator';
+import validateRequest from '../middlewares/requestValidation';
 
 
-const router: Router = express.Router();
+const characterRouter: Router = express.Router();
 
-router.get(
-    '/characters'
+characterRouter.get(
+    '/api/characters',
+    query('page').optional().isString().withMessage("Incorrect format for the page value"),
+    validateRequest
 
 );
 
 
-export default router;
+export default characterRouter;
