@@ -3,7 +3,7 @@ import ICharacter from "../interfaces/characterInterface";
 import { connection1 } from '../config/dbConnection';
 
 /**
- ** Create a Charater schema there the type is explicitly specified using the Interface Character
+ ** Create a Charater schema where the type is explicitly specified using the Interface Character
 */
 
 const characterSchema: Schema<ICharacter> = new mongoose.Schema({
