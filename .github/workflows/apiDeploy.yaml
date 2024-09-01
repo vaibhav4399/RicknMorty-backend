@@ -10,10 +10,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    env:
-      NODE_ENV: 'production'
-
     
     steps:
       - name: Checkout code
