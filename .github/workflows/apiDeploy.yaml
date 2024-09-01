@@ -33,6 +33,16 @@ jobs:
           JWT_SECRET: ${{secrets.JWT_SECRET}}
           JWT_REFRESH_SECRET: ${{secrets.JWT_REFRESH_SECRET}}
 
+      - name: Print secrets
+        run: |
+          echo "${{secrets.UNAME}}"
+          echo "${{secrets.PASSWORD}}"
+          echo "${{secrets.DB_RNM}}"
+          echo "${{secrets.DB_USER}}"
+          echo "${{secrets.JWT_SECRET}}"
+          echo "${{secrets.JWT_REFRESH_SECRET}}"
+          echo "${{secrets.RICKNMORTY_API_PRIVATE}}"
+
       - name: Upload to the server
         uses: appleboy/scp-action@v0.1.7
         with:
