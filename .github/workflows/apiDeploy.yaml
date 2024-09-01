@@ -10,6 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: RicknMorty_API_Backend
     
     steps:
       - name: Checkout code
@@ -34,18 +35,27 @@ jobs:
           JWT_REFRESH_SECRET: ${{secrets.JWT_REFRESH_SECRET}}
 
       - name: Upload to the server
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: 3.110.239.169
           username: rickNmorty
-          key: ${{ secrets.RICKNMORTY_API_PRIVATE }}
-          source: |
-            dist/
-            package.json
-            package-lock.json
+          key: ${{secrets.RICKNMORTY_API_PRIVATE}}
+          port: 22
+          source: " dist/* , package.json, package-lock.json"
           target: "/home/rickNmorty/htdocs/ricknmorty.friguscordis.com"
-          command: |
+          rm: true
+
+      - name: Run the deployment steps
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 3.110.239.169
+          username: rickNmorty
+          key: ${{secrets.RICKNMORTY_API_PRIVATE}}
+          port: 22
+          script: |
             export NODE_PATH=/home/rickNmorty/.nvm/versions/node/v20.17.0/bin
             export PATH=$NODE_PATH:$PATH
-            cd /home/rickNmorty/htdocs/ricknmorty.friguscordis.com          # Change to the deployment directory
+            cd /home/rickNmorty/htdocs/ricknmorty.friguscordis.com
             npm install
+            pm2 restart ${{secrets.APP_NAME}}
+          
