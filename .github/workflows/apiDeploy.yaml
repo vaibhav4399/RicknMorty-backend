@@ -1,0 +1,55 @@
+name: API Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: 
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: 'production'
+
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: check NodeJS version
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.17'
+
+      - name: Install dependencies
+        run: npm install 
+
+      - name: Build Projects
+        run: npm run build
+        env:
+          UNAME: ${{secrets.UNAME}}
+          PASSWORD: ${{secrets.PASSWORD}}
+          DB_RNM: ${{secrets.DB_RNM}}
+          DB_USER: ${{secrets.DB_USER}}
+          JWT_SECRET: ${{secrets.JWT_SECRET}}
+          JWT_REFRESH_SECRET: ${{secrets.JWT_REFRESH_SECRET}}
+
+      - name: Upload to the server
+        uses: appleboy/scp-action@master
+        with:
+          host: 3.110.239.169
+          username: rickNmorty
+          key: ${{ secrets.RICKNMORTY_API_BACKEND }}
+          source: |
+            dist/
+            package.json
+            package-lock.json
+          target: "/home/rickNmorty/htdocs/ricknmorty.friguscordis.com"
+          script: |
+            export NODE_PATH=/home/rickNmorty/.nvm/versions/node/v20.17.0/bin
+            export PATH=$NODE_PATH:$PATH
+            cd /home/rickNmorty/htdocs/ricknmorty.friguscordis.com          # Change to the deployment directory
+            npm install
