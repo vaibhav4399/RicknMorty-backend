@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import errorHandler from './middlewares/errorHandler';
 import authRouter from './routes/authRoutes';
+import characterRouter from './routes/characterRoutes';
 
 
 /* 
@@ -30,6 +31,7 @@ app.use(cookieParser());
 */
 
 app.use('/api/auth', authRouter);
+app.use('/api', characterRouter);
 
 
 /**
