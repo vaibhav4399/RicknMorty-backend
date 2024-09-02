@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import { JWT_SECRET ,JWT_REFRESH_SECRET } from "../config/environment";
 import { customApiError } from './errorHandler';
 
@@ -22,4 +22,36 @@ const generateToken = (payload: IPayload) => {
 
 }
 
-export {generateToken}
+
+const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+
+    const token = req.headers['authorization']?.split(' ')[1];
+
+    try {
+        if(!token){
+            throw new customApiError(401, "Access Denied. Could not authorize the user");
+        }
+
+        const decoded = jwt.verify(token, JWT_SECRET) as string | IPayload;
+
+        if(typeof decoded !== 'string'){
+            if(decoded && decoded.user){
+                req.userId = decoded.user.id;
+            }
+            next();
+        }else{
+            throw new customApiError(401, "Invalid token ID");
+        }
+
+    }
+    catch(e){
+        let err = e;
+        if(e instanceof jwt.JsonWebTokenError){
+            err = new customApiError(401, e.toString())
+        }
+        next(err);
+    }
+
+}
+
+export {generateToken, verifyToken};
