@@ -33,6 +33,8 @@ const getCharacter = async (filter: { [key: string]: Object }, pageNumber?: numb
 
             const pageSize = Math.ceil((characterCount / limit));
 
+            if(pageNumber > pageSize) throw new customApiError(400, "No Data Exists in this realm")
+
             const response = {
                 "info": {
                     "count": characterCount.toString(),
@@ -45,6 +47,9 @@ const getCharacter = async (filter: { [key: string]: Object }, pageNumber?: numb
 
             return response;
 
+        }
+        else{
+            throw new customApiError(400, "Something went wrong while fetching the data");
         }
 
         return null
@@ -80,7 +85,9 @@ const getAllCharacters = async (req: Request, res: Response, next: NextFunction)
 
             const pageSize = Math.ceil((characterCount / limit));
 
-            const response = {
+            if (pageNumber > pageSize) throw new customApiError(400, "No Data Exists in this realm")
+
+            const response: IResult = {
                 "info": {
                     "count": characterCount.toString(),
                     "pages": pageSize.toString(),
@@ -93,7 +100,7 @@ const getAllCharacters = async (req: Request, res: Response, next: NextFunction)
             return res.status(200).json(response);
 
         }else{
-            throw new customApiError(401, "Something went wrong while fetching the characters");
+            throw new customApiError(400, "Something went wrong while fetching the characters");
         }
 
     }
