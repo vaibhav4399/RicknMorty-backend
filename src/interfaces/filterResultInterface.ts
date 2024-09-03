@@ -1,4 +1,5 @@
 import ICharacter from "./characterInterface"
+import ILocation from "./locationInterface";
 
 /**
  * * Interface to create the pagination result format
@@ -11,7 +12,7 @@ interface IResult {
         next: string,
         prev: string
     },
-    data: ICharacter[]
+    data: ICharacter[] | ILocation[]
 }
 
 

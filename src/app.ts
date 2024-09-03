@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import errorHandler from './middlewares/errorHandler';
 import authRouter from './routes/authRoutes';
 import characterRouter from './routes/characterRoutes';
+import locationRouter from './routes/locationRoutes';
 
 
 /* 
@@ -32,6 +33,7 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRouter);
 app.use('/api', characterRouter);
+app.use('/api', locationRouter);
 
 
 /**

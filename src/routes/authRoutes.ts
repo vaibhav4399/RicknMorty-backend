@@ -3,6 +3,9 @@ import { body } from 'express-validator';
 import validateRequest from '../middlewares/requestValidation';
 import { authController } from '../controllers/authController';
 
+/**
+ * * Define a Auth Router to handle requests related to auth
+ */
 
 const authRouter: Router = express.Router();
 

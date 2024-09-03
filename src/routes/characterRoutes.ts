@@ -7,6 +7,10 @@ import { characterController } from '../controllers/characterController';
 const genderOptions = ["Male", "Female", "unkown"];
 const stausOptions = ["Alive", "Dead", "unkown"];
 
+/**
+ * * Define a Character Router to handle request for the characters
+ */
+
 const characterRouter: Router = express.Router();
 
 /**
@@ -26,7 +30,7 @@ characterRouter.get(
  */
 
 characterRouter.get(
-    '(/character/:id(\\d+))',
+    '/character/:id(\\d+)',
     verifyToken,
     param("id").notEmpty().withMessage("Character id is required").isString().withMessage("Invalid format for character ID"),
     validateRequest,
