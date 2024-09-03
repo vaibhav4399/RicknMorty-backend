@@ -1,5 +1,9 @@
 import { Document} from 'mongoose';
 
+/***
+ * * Interface for the Character schema 
+ */
+
 interface ICharacter extends Document {
     _id: number,
     name: string,

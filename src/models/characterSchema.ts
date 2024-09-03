@@ -48,6 +48,16 @@ const characterSchema: Schema<ICharacter> = new mongoose.Schema({
             required: true
         }
     }
+},
+{
+    toJSON: {
+        virtuals: true,
+        versionKey: false,
+        transform(doc, ret) {
+            ret.id = ret._id;
+            delete ret._id;
+        },
+    }
 });
 
 
