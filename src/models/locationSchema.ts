@@ -29,6 +29,16 @@ const locationSchema: Schema<ILocation> = new mongoose.Schema({
         required: false
     }
 
+},
+{
+    toJSON: {
+        virtuals: true,
+        versionKey: false,
+        transform(doc, ret) {
+            ret.id = ret._id;
+            delete ret._id;
+        },
+    }
 });
 
 const Location = connection1.model<ILocation>('locations', locationSchema);

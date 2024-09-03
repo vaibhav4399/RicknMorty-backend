@@ -3,11 +3,21 @@ import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import { JWT_SECRET ,JWT_REFRESH_SECRET } from "../config/environment";
 import { customApiError } from './errorHandler';
 
+/**
+ * * Interface for  the Payload given to generate the token
+ */
+
 interface IPayload {
     user: {
         id: string
     }
 }
+
+/**
+ * * Function to genereate the JWT token for the user
+ * @param payload
+ * @returns Returns a Signed JWT access token and refresh token
+ */
 
 const generateToken = (payload: IPayload) => {
 
@@ -22,6 +32,12 @@ const generateToken = (payload: IPayload) => {
 
 }
 
+/**
+ * * Function to verify the JWT token for  API Requests
+ * @param req HTTP Requests
+ * @param res HTTP Response
+ * @param next Used to go to next middleware or for Error Reporting
+ */
 
 const verifyToken = (req: Request, res: Response, next: NextFunction) => {
 
