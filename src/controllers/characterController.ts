@@ -3,6 +3,7 @@ import Character from "../models/characterSchema";
 import ICharacter from "../interfaces/characterInterface";
 import { customApiError } from "../middlewares/errorHandler";
 import IResult from "../interfaces/filterResultInterface";
+import redisClient from "../config/redisConnection";
 
 const limit = 10;
 let pageNumber: number;
@@ -77,6 +78,14 @@ const getAllCharacters = async (req: Request, res: Response, next: NextFunction)
             pageNumber = 1;
         }
 
+        const redisKey = `characters:${pageNumber}`;
+
+        const cachedData = await redisClient.get(redisKey);
+
+        if(cachedData){
+            return res.status(200).json(JSON.parse(cachedData));
+        }
+
         const result: ICharacter[] | null = await Character.find({}).skip(limit * (pageNumber - 1)).limit(limit);
 
         const characterCount: number | null = await Character.countDocuments({});
@@ -96,6 +105,8 @@ const getAllCharacters = async (req: Request, res: Response, next: NextFunction)
                 },
                 "data": result
             }
+
+            await redisClient.set(redisKey, JSON.stringify(response), { EX: 60 * 60 * 24 });
 
             return res.status(200).json(response);
 
@@ -156,15 +167,27 @@ const getCharacterFilter = async (req: Request, res: Response, next: NextFunctio
 
         const filter = req.body;
         let query: {[key: string]: Object} = {};
+        let redisKey = 'character:';
 
         for(const key in filter){
             const temp =  {"$in" : filter[key]}
-            query[key] = temp
+            query[key] = temp;
+            redisKey  = redisKey + `${key}:` 
+        }
+
+        redisKey = redisKey + `${pageNumber}`
+
+        const cachedData = await redisClient.get(redisKey);
+
+        if(cachedData){
+            return res.status(200).json(JSON.parse(cachedData));
         }
 
         const result : ICharacter | IResult | null = await getCharacter(query, pageNumber)
 
         if(!result) throw new customApiError(400, "No Characterd found");
+
+        await redisClient.set(redisKey, JSON.stringify(result), { EX: 60 * 60 * 24 });
 
         return res.status(200).json(result)
     }
