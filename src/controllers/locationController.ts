@@ -3,6 +3,7 @@ import Location from "../models/locationSchema";
 import ILocation from "../interfaces/locationInterface";
 import { customApiError } from "../middlewares/errorHandler";
 import IResult from "../interfaces/filterResultInterface";
+import redisClient from "../config/redisConnection";
 
 const limit: number = 10;
 let pageNumber: number;
@@ -26,6 +27,14 @@ const getLocations = async (req: Request, res: Response, next: NextFunction) => 
         else {
             pageNumber = 1;
         }
+
+        const redisKey = `locations:${pageNumber}`;
+
+        const cachedData = await redisClient.get(redisKey);
+
+        if(cachedData){
+            return res.status(200).json(JSON.parse(cachedData));
+        }
     
         const result: ILocation[] | null = await Location.find({}).skip(limit * (pageNumber - 1)).limit(limit);
     
@@ -47,6 +56,8 @@ const getLocations = async (req: Request, res: Response, next: NextFunction) => 
                 "data": result
             }
             
+            await redisClient.set(redisKey, JSON.stringify(response), {EX: 60 * 60 * 24})
+
             res.status(200).json(response);
         }
         else{
