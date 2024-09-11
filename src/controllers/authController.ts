@@ -44,8 +44,6 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
             lastname: lastname
         })
 
-        // console.log(username, email, firstname, lastname, hashedPassword);
-
         user.save();
 
         const payload = {
@@ -56,13 +54,22 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
 
         const {accessToken, refreshToken} =  generateToken(payload);
 
-        res.cookie('refreshToken', refreshToken, {
+       /* res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: true,
+            sameSite: 'none',
             maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+        });*/
 
-        res.status(200).json({accessToken});
+        req.session.userID = user.id;
+        req.session.refreshToken = refreshToken;
+
+        const response = {
+            userID: user.id,
+            accessToken: accessToken
+        }
+        res.cookie('connect.sid', req.sessionID, { httpOnly: true, secure: true, sameSite: 'none', path: '/', maxAge: 90000 });
+        res.status(200).json(response);
 
     }
     catch(e){
@@ -98,13 +105,23 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
             const { accessToken, refreshToken } = generateToken(payload);
 
+            req.session.userID = user.id;
+            req.session.refreshToken = refreshToken;
+
+            /*
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 secure: true,
+                sameSite: 'none',
                 maxAge: 7 * 24 * 60 * 60 * 1000
-            });
+            });*/
 
-            res.status(200).json({ accessToken });
+            const response = {
+                userID: user.id,
+                accessToken: accessToken
+            }
+            res.cookie('connect.sid', req.sessionID, { httpOnly: true, secure: true, sameSite: 'none', path: '/', maxAge: 90000 });
+            res.status(200).json(response);
         }
         else{
             throw new customApiError(400, "User with the given username not found");
@@ -116,6 +133,12 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+
+const refreshJWT = (req: Request, res: Response, next: NextFunction) => {
+
+    const refreshToken = req.cookies.refreshToken
+
+}
 
 export const authController = {
     register,
