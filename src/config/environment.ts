@@ -28,6 +28,16 @@ export const DB1_URI: string = `mongodb+srv://${Username}:${Password}@rickandmor
 export const DB2_URI: string = `mongodb+srv://${Username}:${Password}@rickandmorty.db8faab.mongodb.net/${DB2}`;
 
 
+/**
+ * * Export JWT Secrets
+ */
 
 export const JWT_SECRET: string = process.env.JWT_SECRET || '';
-export const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || '';
+export const JWT_REFRESH_SECRET: string = process.env.JWT_REFRESH_SECRET || '';
+
+
+/**
+ * * Export Redis Session Secret
+ */
+
+export const REDIS_SESSION_SECRET: string = process.env.REDIS_SESSION_SECRET || '';
