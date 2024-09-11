@@ -68,7 +68,7 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
             userID: user.id,
             accessToken: accessToken
         }
-        res.cookie('connect.sid', req.sessionID, { httpOnly: true, secure: true, sameSite: 'none', path: '/', maxAge: 90000 });
+        res.cookie('connect.sid', req.sessionID, { httpOnly: true, secure: true, sameSite: 'none', path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 });
         res.status(200).json(response);
 
     }
@@ -120,7 +120,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
                 userID: user.id,
                 accessToken: accessToken
             }
-            res.cookie('connect.sid', req.sessionID, { httpOnly: true, secure: true, sameSite: 'none', path: '/', maxAge: 90000 });
+            res.cookie('connect.sid', req.sessionID, { httpOnly: true, secure: true, sameSite: 'none', path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 });
             res.status(200).json(response);
         }
         else{

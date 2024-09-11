@@ -56,7 +56,7 @@ app.use(session({
     cookie: {
         secure: true,
         httpOnly: true,
-        sameSite: 'lax',
+        sameSite: 'none',
         maxAge: 7 * 24 * 60 * 60 * 1000,
         path: '/',
     }
@@ -77,15 +77,20 @@ app.get('/test-cookie', (req, res) => {
     res.send("cookie is set")
 })
 
-app.get('/check-session', (req,res) => {
+app.get('/check-session', async (req,res) => {
     console.log('Checking session for:', req.sessionID);
     console.log("Session:", req.session)
-    if(req.session.userID){
-        return res.status(200).json({ message: 'User is logged in', userID: req.session.userID });
-    }
-    else{
-        return res.status(401).json({ message: 'No session found' });
-    }
+
+    const session_id = req.cookies['connect.sid']
+
+    let session = await redisClient.get(`sess:${session_id}`);
+    console.log(session)
+
+    if (!session) return res.status(401).json({ message: 'No session found' });
+
+    session = JSON.parse(session)
+    res.cookie('connect.sid', session_id, { httpOnly: true, secure: true, sameSite: 'none', path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 });
+    return res.status(200).json({ message: 'User is logged in', userID: req.session.userID });
 })
 
 /**
